@@ -1,0 +1,112 @@
+Source: nfs-ganesha
+Section: net
+Priority: optional
+Maintainer: Andrew Walker <awalker@ixsystems.com>
+Standards-Version: 3.9.7
+Homepage: https://github.com/nfs-ganesha/nfs-ganesha
+Build-Depends: debhelper (>= 10),
+               bison,
+               flex,
+               cmake,
+               libdbus-1-dev,
+               libnfsidmap-dev,
+               libwbclient-dev,
+               libkrb5-dev,
+               libblkid-dev,
+               libattr1-dev,
+               libacl1-dev,
+               lttng-tools,
+               liblttng-ust-dev,
+               liblttng-ctl-dev,
+               liburcu-dev,
+               xfslibs-dev,
+               uuid-dev,
+               libcap-dev,
+               libglusterfs-dev (>= 6.0),
+               dh-python,
+               python3-dev,
+               python3-sphinx,
+               dh-python,
+               pkgconf
+Vcs-Git: https://github.com/nfs-ganesha/nfs-ganesha.git
+
+Package: nfs-ganesha
+Architecture: any
+Depends: dbus, nfs-common, rpcbind,
+         ${shlibs:Depends},
+         ${perl:Depends},
+         ${misc:Depends},
+         libwbclient0,
+         liburcu6,
+         daemon
+Description: nfs-ganesha is a NFS server in User Space
+ NFS-GANESHA is a NFS Server running in user space with a large cache.
+ It comes with various backend modules to support different file systems
+ and namespaces. Supported name spaces are POSIX, PROXY, SNMP, FUSE-like,
+ HPSS, LUSTRE, XFS and ZFS.
+
+Package: nfs-ganesha-gluster
+Multi-Arch: same
+Architecture: any
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends},
+         nfs-ganesha (=${binary:Version}),
+         libglusterfs0 (>= 6.0)
+Description: nfs-ganesha fsal gluster libraries
+ NFS-GANESHA is a NFS Server running in user space with a large cache.
+ It comes with various backend modules to support different file systems
+ and namespaces. Supported name spaces are POSIX, PROXY, SNMP, FUSE-like,
+ HPSS, LUSTRE, XFS and ZFS.
+ This package contains a library for FSAL_GLUSTER and an example .conf file
+
+Package: nfs-ganesha-vfs
+Multi-Arch: same
+Architecture: any
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends},
+         nfs-ganesha (=${binary:Version})
+Description: nfs-ganesha fsal vfs libraries
+ NFS-GANESHA is a NFS Server running in user space with a large cache.
+ It comes with various backend modules to support different file systems
+ and namespaces. Supported name spaces are POSIX, PROXY, SNMP, FUSE-like,
+ HPSS, LUSTRE, XFS and ZFS.
+ This package contains a library for a FSAL_VFS and an example vfs.conf file
+
+Package: nfs-ganesha-nullfs
+Multi-Arch: same
+Architecture: any
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends},
+         nfs-ganesha (=${binary:Version})
+Description: nfs-ganesha fsal nullfs libraries
+ NFS-GANESHA is a NFS Server running in user space with a large cache.
+ It comes with various backend modules to support different file systems
+ and namespaces. Supported name spaces are POSIX, PROXY, SNMP, FUSE-like,
+ HPSS, LUSTRE, XFS and ZFS.
+ This package contains a library for a FSAL_NULLFS
+
+Package: nfs-ganesha-mem
+Multi-Arch: same
+Architecture: any
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends},
+         nfs-ganesha (=${binary:Version})
+Description: nfs-ganesha fsal mem libraries
+ NFS-GANESHA is a NFS Server running in user space with a large cache.
+ It comes with various backend modules to support different file systems
+ and namespaces. Supported name spaces are POSIX, PROXY, SNMP, FUSE-like,
+ HPSS, LUSTRE, XFS and ZFS.
+ This package contains a library for a FSAL_MEM
+
+Package: nfs-ganesha-doc
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Description: Documentation for nfs-ganesha
+ NFS-GANESHA is a NFS Server running in user space with a large cache.
+ It comes with various backend modules to support different file systems
+ and namespaces. Supported name spaces are POSIX, PROXY, SNMP, FUSE-like,
+ HPSS, LUSTRE, XFS and ZFS.
+ .
+ This package contains documentation and examples for nfs-ganesha
+
