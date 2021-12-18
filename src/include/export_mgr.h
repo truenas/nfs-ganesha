@@ -282,8 +282,10 @@ static inline void tmp_get_exp_paths(struct tmp_export_paths *tmp,
 
 	if (gr != NULL)
 		tmp->tmp_pseudopath = gsh_refstr_get(gr);
-	else
+	else if (exp->cfg_pseudopath != NULL)
 		tmp->tmp_pseudopath = gsh_refstr_dup(exp->cfg_pseudopath);
+	else
+		tmp->tmp_pseudopath = gsh_refstr_dup("No Export");
 
 	rcu_read_unlock();
 }
