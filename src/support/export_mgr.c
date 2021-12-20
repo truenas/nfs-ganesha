@@ -1555,7 +1555,7 @@ static bool export_to_dbus(struct gsh_export *exp_node, void *state)
 
 	path = TMP_PSEUDOPATH(&tmp);
 
-	if (path == NULL) {
+	if (strcmp(path, "No Export") == 0) {
 
 		path = TMP_FULLPATH(&tmp);
 		if (path == NULL)
