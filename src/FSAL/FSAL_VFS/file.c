@@ -655,8 +655,14 @@ fsal_status_t vfs_open2(struct fsal_obj_handle *obj_hdl,
 	 * merged.
 	 */
 
-#ifdef ENABLE_VFS_DEBUG_ACL
-	if (createmode != FSAL_NO_CREATE) {
+#ifdef ENABLE_TRUENAS_ACL
+	/*
+	 * Native NFSv4 ACL should auto-inherit parent ACL on create.
+	 * The steps to synthesize NFSv4 ACL from POSIX1E may require
+	 * additional steps to simulate NFSv4 inheritance.
+	 */
+	if ((createmode != FSAL_NO_CREATE) &&
+	    (myself->acl_brand == ACL_BRAND_POSIX)) {
 		/* Need to ammend attributes for inherited ACL, these will be
 		 * set later. We also need to test for permission to create
 		 * since there might be an ACL.
@@ -688,7 +694,7 @@ fsal_status_t vfs_open2(struct fsal_obj_handle *obj_hdl,
 		if (FSAL_IS_ERROR(status))
 			return status;
 	}
-#endif /* ENABLE_VFS_DEBUG_ACL */
+#endif /* ENABLE_TRUENAS_ACL */
 
 	if (createmode != FSAL_NO_CREATE) {
 		/* Now add in O_CREAT and O_EXCL. */
@@ -803,7 +809,11 @@ fsal_status_t vfs_open2(struct fsal_obj_handle *obj_hdl,
 	 */
 	created = (posix_flags & O_EXCL) != 0;
 
-	/** @todo FSF: If we are running with ENABLE_VFS_DEBUG_ACL or a
+	/*
+	 * below is original comment from DEBUG_ACL. Since kernel is enforcing
+	 * ZFS ACLs, we should be fine here
+	 */
+	/** @todo FSF: If we are running with ENABLE_TRUENAS_ACL or a
 	 *             VFS sub-FSAL that supports ACLs but doesn't permission
 	 *             check using those ACLs during openat, then there may be
 	 *             permission differences here...
@@ -903,7 +913,7 @@ retry_attr:
 		 * Note that we only set the attributes if we were responsible
 		 * for creating the file and we have attributes to set.
 		 *
-		 * Note if we have ENABLE_VFS_DEBUG_ACL an inherited ACL might
+		 * Note if we have ENABLE_TRUENAS_ACL an inherited ACL might
 		 * be part of the attributes we are setting here.
 		 */
 		status = (*new_obj)->obj_ops->setattr2(*new_obj, false,
@@ -1985,8 +1995,9 @@ fsal_status_t vfs_setattr2(struct fsal_obj_handle *obj_hdl,
 		return fsalstat(posix2fsal_error(EXDEV), EXDEV);
 	}
 
-#ifdef ENABLE_VFS_DEBUG_ACL
-#ifdef ENABLE_RFC_ACL
+#ifdef ENABLE_TRUENAS_ACL
+//#ifdef ENABLE_RFC_ACLL
+#if 0
 	if (FSAL_TEST_MASK(attrib_set->valid_mask, ATTR_MODE) &&
 	    !FSAL_TEST_MASK(attrib_set->valid_mask, ATTR_ACL)) {
 		/* Set ACL from MODE */

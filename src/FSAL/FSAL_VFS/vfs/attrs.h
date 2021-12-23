@@ -32,7 +32,6 @@
 
 #include "../vfs_methods.h"
 
-void vfs_acl_init(void);
 fsal_status_t vfs_sub_getattrs(struct vfs_fsal_obj_handle *vfs_hdl,
 			       int fd, attrmask_t request_mask,
 			       struct fsal_attrlist *attrs);

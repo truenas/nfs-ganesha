@@ -84,10 +84,14 @@ static struct vfs_fsal_module VFS = {
 			.expire_time_parent = -1,
 		}
 	},
-	.only_one_user = false
+	.acl_brand = ACL_BRAND_NONE,
+	.acl_brand_str = "none",
+	.only_one_user = false,
 };
 
 static struct config_item vfs_params[] = {
+	CONF_ITEM_STR("acl_brand", 4, 8, "none", vfs_fsal_module,
+		      acl_brand_str),
 	CONF_ITEM_BOOL("link_support", true, vfs_fsal_module,
 		       module.fs_info.link_support),
 	CONF_ITEM_BOOL("symlink_support", true, vfs_fsal_module,
@@ -123,6 +127,18 @@ struct config_block vfs_param = {
  * must be called with a reference taken (via lookup_fsal)
  */
 
+static acl_brand_t get_acl_brand(const char *brand_string) {
+	if (strcasecmp(brand_string, "nfs4") == 0 ||
+	    strcasecmp(brand_string, "nfsv4") == 0) {
+		return ACL_BRAND_NFS41;
+	}
+	if (strcasecmp(brand_string, "posix") == 0 ||
+	    strcasecmp(brand_string, "posix1e") == 0) {
+		return ACL_BRAND_POSIX;
+	}
+	return ACL_BRAND_NONE;
+}
+
 static fsal_status_t init_config(struct fsal_module *vfs_fsal_module,
 				 config_file_t config_struct,
 				 struct config_error_type *err_type)
@@ -130,6 +146,7 @@ static fsal_status_t init_config(struct fsal_module *vfs_fsal_module,
 	struct vfs_fsal_module *vfs_module =
 	    container_of(vfs_fsal_module, struct vfs_fsal_module, module);
 	int prev_errors = err_type->errors;
+	acl_brand_t brand;
 
 #ifdef F_OFD_GETLK
 	int fd, rc;
@@ -189,6 +206,23 @@ static fsal_status_t init_config(struct fsal_module *vfs_fsal_module,
 	if ((err_type->errors > prev_errors) &&
 	    !config_error_is_harmless(err_type))
 		return fsalstat(ERR_FSAL_INVAL, 0);
+
+	vfs_module->acl_brand = get_acl_brand(vfs_module->acl_brand_str);
+
+	switch(vfs_module->acl_brand) {
+	case ACL_BRAND_NFS41:
+		LogInfo(COMPONENT_FSAL, "FSAL_VFS enabling NFS4 ACLs");
+		vfs_module->module.fs_info.acl_support |= FSAL_ACLSUPPORT_ALLOW;
+		vfs_module->module.fs_info.supported_attrs |= ATTR_ACL;
+		break;
+	case ACL_BRAND_POSIX:
+		LogInfo(COMPONENT_FSAL, "FSAL_VFS enabling POSIX ACLs");
+		vfs_module->module.fs_info.supported_attrs |= ATTR_ACL;
+		break;
+	default:
+		LogInfo(COMPONENT_FSAL, "FSAL_VFS ACLs DISABLED");
+		break;
+	}
 
 	display_fsinfo(&vfs_module->module);
 	LogFullDebug(COMPONENT_FSAL,

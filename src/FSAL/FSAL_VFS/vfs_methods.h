@@ -39,6 +39,14 @@
 struct vfs_fsal_obj_handle;
 struct vfs_fsal_export;
 
+typedef enum {
+	ACL_BRAND_NONE,
+	ACL_BRAND_POSIX,
+	ACL_BRAND_NFS41,
+} acl_brand_t;
+
+#define ACL_ENABLED(x)	(x->acl_brand != ACL_BRAND_NONE)
+
 /*
  * VFS internal module
  */
@@ -46,6 +54,8 @@ struct vfs_fsal_module {
 	struct fsal_module module;
 	struct fsal_obj_ops handle_ops;
 	bool only_one_user;
+	acl_brand_t acl_brand;
+	char *acl_brand_str;
 };
 
 /*
@@ -171,6 +181,7 @@ struct vfs_fsal_obj_handle {
 #ifdef ENABLE_VFS_DEBUG_ACL
 	uint32_t mode;		/*< POSIX access mode */
 #endif
+	acl_brand_t acl_brand;
 	struct vfs_subfsal_obj_ops *sub_ops;	/*< Optional subfsal ops */
 	const struct fsal_up_vector *up_ops;	/*< Upcall operations */
 	union {
