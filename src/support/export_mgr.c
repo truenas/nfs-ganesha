@@ -1500,10 +1500,7 @@ static bool gsh_export_displayexport(DBusMessageIter *args,
 				       DBUS_TYPE_STRING,
 				       &path);
 
-	path = TMP_PSEUDOPATH(&tmp);
-
-	if (path == NULL)
-		path = "";
+	path = tmp_export_path(&tmp);
 
 	dbus_message_iter_append_basic(&iter,
 				       DBUS_TYPE_STRING,
@@ -1553,14 +1550,7 @@ static bool export_to_dbus(struct gsh_export *exp_node, void *state)
 
 	tmp_get_exp_paths(&tmp, exp_node);
 
-	path = TMP_PSEUDOPATH(&tmp);
-
-	if (strcmp(path, "No Export") == 0) {
-
-		path = TMP_FULLPATH(&tmp);
-		if (path == NULL)
-			path = "";
-	}
+	path = tmp_export_path(&tmp);
 
 	tmp_put_exp_paths(&tmp);
 
@@ -1577,34 +1567,6 @@ static bool export_to_dbus(struct gsh_export *exp_node, void *state)
 					  &struct_iter);
 	return true;
 }
-
-#ifdef _USE_NFS3
-#define STAT_TYPE_NFS3 "bb"
-#else
-#define STAT_TYPE_NFS3 ""
-#endif
-
-#ifdef _USE_NLM
-#define STAT_TYPE_NLM "b"
-#else
-#define STAT_TYPE_NLM ""
-#endif
-
-#ifdef _USE_RQUOTA
-#define STAT_TYPE_RQUOTA "b"
-#else
-#define STAT_TYPE_RQUOTA ""
-#endif
-
-#ifdef _USE_9P
-#define STAT_TYPE_9P "b"
-#else
-#define STAT_TYPE_9P ""
-#endif
-
-#define EXPORT_CONTAINER \
-	"(qs" STAT_TYPE_NFS3 STAT_TYPE_NLM \
-	STAT_TYPE_RQUOTA "bbb" STAT_TYPE_9P "(tt))"
 
 static bool gsh_export_showexports(DBusMessageIter *args,
 				   DBusMessage *reply,
@@ -1630,10 +1592,7 @@ static struct gsh_dbus_method export_show_exports = {
 	.name = "ShowExports",
 	.method = gsh_export_showexports,
 	.args = {TIMESTAMP_REPLY,
-		{
-		.name = "exports",
-		.type = "a" EXPORT_CONTAINER,
-		.direction = "out"},
+		 EXPORTS_REPLY,
 		 END_ARG_LIST}
 };
 
