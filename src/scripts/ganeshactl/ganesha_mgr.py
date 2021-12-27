@@ -338,7 +338,10 @@ if __name__ == '__main__':
        "         Example: \n"                                                      \
        "         update export /etc/ganesha/gpfs.conf \"EXPORT(Export_ID=77)\"\n\n"\
        "   display: \n"                                                            \
-       "      export export_id: Displays the export with the given ID\n\n"         \
+       "      export export_id: Displays the export with the given ID.\n"          \
+       "         export_id must be positive number\n"                              \
+       "         Example: \n"                                                      \
+       "         display export 10 \n\n"\
        "   purge: \n"                                                              \
        "      netgroups: Purges netgroups cache\n"                                 \
        "      idmap: Purges idmapper cache\n"                                      \
@@ -366,6 +369,10 @@ if __name__ == '__main__':
 
     # add
     elif sys.argv[1] == "add":
+        if len(sys.argv) == 2:
+            msg = 'add requires client or export option. '
+            msg += 'Try "ganesha_mgr.py help" for more info'
+            sys.exit(msg)
         if sys.argv[2] == "client":
             if len(sys.argv) < 4:
                 print("add client requires an IP."\
@@ -384,6 +391,10 @@ if __name__ == '__main__':
 
     # remove
     elif sys.argv[1] == "remove":
+        if len(sys.argv) == 2:
+            msg = 'remove requires client or export option. '
+            msg += 'Try "ganesha_mgr.py help" for more info'
+            sys.exit(msg)
         if sys.argv[2] == "client":
             if len(sys.argv) < 4:
                 print("remove client requires an IP."\
@@ -402,11 +413,11 @@ if __name__ == '__main__':
 
     # update
     elif sys.argv[1] == "update":
+        if len(sys.argv) < 5:
+            msg = 'update export requires a config file and an expression. '
+            msg += 'Try "ganesha_mgr.py help" for more info'
+            sys.exit(msg)
         if sys.argv[2] == "export":
-            if len(sys.argv) < 5:
-                print("update export requires a config file and an expression."\
-                      " Try \"ganesha_mgr.py help\" for more info")
-                sys.exit(1)
             exportmgr.updateexport(sys.argv[3], sys.argv[4])
         else:
             msg = "Updating '%s' is not supported" % sys.argv[2]
@@ -414,11 +425,15 @@ if __name__ == '__main__':
 
     # display
     elif sys.argv[1] == "display":
+        if len(sys.argv) < 4:
+            msg = 'display export requires an export ID. '
+            msg += 'Try "ganesha_mgr.py help" for more info'
+            sys.exit(msg)
+        elif sys.argv[3].isdigit() == False:
+            msg = 'export ID must be positive number. '
+            msg += 'Try "ganesha_mgr.py help" for more info'
+            sys.exit(msg)
         if sys.argv[2] == "export":
-            if len(sys.argv) < 4:
-                print("display export requires an export ID."\
-                      " Try \"ganesha_mgr.py help\" for more info")
-                sys.exit(1)
             exportmgr.displayexport(sys.argv[3])
         else:
             msg = "Displaying '%s' is not supported" % sys.argv[2]
@@ -470,11 +485,11 @@ if __name__ == '__main__':
 
     # set
     elif sys.argv[1] == "set":
+        if len(sys.argv) < 5:
+            msg = 'set log requires a component and a log level. '
+            msg += 'Try "ganesha_mgr.py help" for more info'
+            sys.exit(msg)
         if sys.argv[2] == "log":
-            if len(sys.argv) < 5:
-                print("set log requires a component and a log level."\
-                      " Try \"ganesha_mgr.py help\" for more info")
-                sys.exit(1)
             logmgr.set(sys.argv[3], sys.argv[4])
         else:
             msg = "Setting '%s' is not supported" % sys.argv[2]
@@ -482,11 +497,11 @@ if __name__ == '__main__':
 
     # get
     elif sys.argv[1] == "get":
+        if len(sys.argv) < 4:
+            msg = 'get log requires a component. '
+            msg += 'Try "ganesha_mgr.py help" for more info'
+            sys.exit(msg)
         if sys.argv[2] == "log":
-            if len(sys.argv) < 4:
-                print("get log requires a component."\
-                      " Try \"ganesha_mgr.py help\" for more info")
-                sys.exit(1)
             logmgr.get(sys.argv[3])
         else:
             msg = "Getting '%s' is not supported" % sys.argv[2]
@@ -494,14 +509,14 @@ if __name__ == '__main__':
 
     # getall
     elif sys.argv[1] == "getall":
+        if len(sys.argv) < 3:
+            msg = 'getall requires a component. '
+            msg += 'Try "ganesha_mgr.py help" for more info'
+            sys.exit(msg)
         if sys.argv[2] == "logs":
-            if len(sys.argv) < 3:
-                print("getall requires a component."\
-                      " Try \"ganesha_mgr.py help\" for more info")
-                sys.exit(1)
             logmgr.getall()
         else:
-            msg = "Getall'%s' is not supported" % sys.argv[2]
+            msg = "Getting all '%s' is not supported" % sys.argv[2]
             sys.exit(msg)
 
     # others
