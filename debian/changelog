@@ -1,3 +1,9 @@
+nfs-ganesha (4.0+ix-3) bullseye; urgency=medium
+
+  * nfs-ganesha 4.0.1
+
+ -- Andrew Walker <awalker@ixsystems.com> Tue, 18 Jan 2021 15:30:00 -0400
+
 nfs-ganesha (4.0+ix-2) bullseye; urgency=medium
 
   * nfs-ganesha 4.0
